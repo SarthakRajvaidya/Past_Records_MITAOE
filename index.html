@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MITAOE Student Records</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.sheetjs.com/xlsx-0.19.2/package/dist/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>MITAOE - Past Year Students Records</h1>
+    <nav>
+      <a href="#students">Students</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>Welcome to MITAOE Records Portal</h2>
+    <p>View, search, sort, filter, and download the records of our talented alumni.</p>
+  </section>
+
+  <section id="students">
+    <h2>Student Records</h2>
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="Search by Name or Branch">
+      <select id="branchFilter">
+        <option value="">All Branches</option>
+        <option value="Computer">Computer</option>
+        <option value="IT">IT</option>
+        <option value="Mechanical">Mechanical</option>
+        <option value="Civil">Civil</option>
+        <option value="ENTC">ENTC</option>
+        <option value="Electrical">Electrical</option>
+      </select>
+      <button onclick="downloadExcel()">Download Excel</button>
+    </div>
+    <table id="studentsTable" class="display">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Branch</th>
+          <th>Passing Year</th>
+          <th>Marks (%)</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- Students data will appear here dynamically -->
+      </tbody>
+    </table>
+  </section>
+
+  <section id="about">
+    <h2>About MITAOE</h2>
+    <p>MIT Academy of Engineering (MITAOE) is a premier engineering institute shaping future engineers and leaders with innovative education and industry-oriented programs.</p>
+  </section>
+
+  <footer>
+    <p>© 2025 MITAOE. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    // Random student data generator
+    const students = [];
+    const branches = ["Computer", "IT", "Mechanical", "Civil", "ENTC", "Electrical"];
+    const names = ["Aarav", "Vivaan", "Anaya", "Ishaan", "Diya", "Saanvi", "Krishna", "Riya", "Aditya", "Myra", "Ayaan", "Aditi", "Raghav", "Meera", "Madhav", "Neha", "Siddhi", "Rajeev", "Aarohi", "Kunal", "Nisha", "Harsh", "Sanya", "Vivek", "Tanvi", "Ritesh", "Tanya", "Arjun", "Pranjal", "Gauri", "Devanshi", "Vishal", "Haritha", "Kriti", "Bhoomika", "Aarav", "Moksha", "Nitin", "Preeti", "Yogesh", "Simran", "Rohit", "Shivani", "Madhuri", "Shreyas", "Divya", "Ruchika", "Amit", "Ayesha", "Manisha"];
+    
+    for (let i = 1; i <= 600; i++) {
+      const name = `${names[Math.floor(Math.random() * names.length)]} ${names[Math.floor(Math.random() * names.length)]}`;
+      const branch = branches[Math.floor(Math.random() * branches.length)];
+      const year = Math.floor(Math.random() * (2023 - 2015 + 1)) + 2015;
+      const marks = (Math.random() * 100).toFixed(2);
+      students.push({ "id": i, "name": name, "branch": branch, "year": year, "marks": marks });
+    }
+
+    $(document).ready(function() {
+      const table = $('#studentsTable').DataTable({
+        data: students,
+        columns: [
+          { data: 'id' },
+          { data: 'name' },
+          { data: 'branch' },
+          { data: 'year' },
+          { data: 'marks' }
+        ]
+      });
+
+      // Download function
+      function downloadExcel() {
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(students);
+        XLSX.utils.book_append_sheet(wb, ws, 'Students');
+        XLSX.writeFile(wb, 'students_records.xlsx');
+      }
+
+      // Search and filter functionality
+      $('#searchInput').on('keyup', function() {
+        table.search(this.value).draw();
+      });
+
+      $('#branchFilter').on('change', function() {
+        table.column(2).search(this.value).draw();
+      });
+
+      // Trigger Excel download
+      window.downloadExcel = downloadExcel;
+    });
+  </script>
+</body>
+</html>
